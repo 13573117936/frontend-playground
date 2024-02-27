@@ -3,7 +3,7 @@ import {
   createRoutesFromElements,
   Route,
 } from "react-router-dom";
-import Gemini from "./pages/gemini";
+import Gemini from "./pages/Gemini";
 import Catelogue from "./pages/Catalogue";
 
 export const router = createBrowserRouter(
