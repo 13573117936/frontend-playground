@@ -1,3 +1,9 @@
+import { TextField } from "@mui/material";
+
 export default function Gemini() {
-  return <div>123123 Gemini</div>;
+  return (
+    <div>
+      <TextField variant="outlined" />
+    </div>
+  );
 }
