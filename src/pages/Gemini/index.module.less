@@ -1,3 +1,81 @@
+@import "/src/theme/index.less";
+
 .container {
   width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+  .header {
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .chat {
+    flex: 1;
+    overflow: scroll;
+    display: flex;
+    align-items: flex-start;
+    .chatItem {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 40px;
+        border: 1px solid @color-600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        .name {
+          font-size: 16px;
+          font-weight: 700;
+        }
+        .text {
+          border-radius: 16px;
+          min-height: 40px;
+          box-sizing: border-box;
+          padding: 12px;
+          background-color: #f0f0f0;
+          line-height: 24px;
+          .blinking {
+            width: 2px;
+            height: 16px;
+            display: inline-block;
+            background-color: #000;
+            animation: blink 1s infinite;
+          }
+        }
+      }
+    }
+  }
+  .bottom {
+    .input {
+      height: 40px;
+      border-radius: 8px 0 0 8px;
+    }
+    .btn {
+      height: 40px;
+      border-radius: 0 8px 8px 0;
+    }
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

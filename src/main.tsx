@@ -5,10 +5,12 @@ import { router } from "./routes.tsx";
 import { RouterProvider } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import Theme from "./theme/index.ts";
+import { showInsetEffect } from "./utils/wave.ts";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ConfigProvider
+      wave={{ showEffect: showInsetEffect }}
       theme={{
         token: {
           // Seed Token，影响范围大
