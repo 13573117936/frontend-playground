@@ -3,13 +3,13 @@ import {
   createRoutesFromElements,
   Route,
 } from "react-router-dom";
-import App from "./App";
-import Gemini from "./pages/gemini";
+import Gemini from "./pages/Gemini";
+import Catelogue from "./pages/Catalogue";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<App />}></Route>
+      <Route path="/" element={<Catelogue />}></Route>
       <Route path="/gemini" element={<Gemini />}></Route>
     </>
   )
