@@ -1,34 +1,86 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
 import { Button, Input, Space } from "antd";
 import model from "./model";
-import { GoogleCircleFilled, SendOutlined } from "@ant-design/icons";
+import {
+  GoogleCircleFilled,
+  SendOutlined,
+  SmileFilled,
+} from "@ant-design/icons";
 import theme from "../../theme";
 import Markdown from "markdown-to-jsx";
+import cx from "classnames";
+
+type ChatList = Array<{
+  role: "User" | "Gemini";
+  content: string;
+  status: "loading" | "finish" | "error";
+}>;
 
 export default function Gemini() {
   const [text, setText] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const [chatList, setChatList] = useState([]);
+  const [chatList, setChatList] = useState<ChatList>([]);
+  const chatRef = useRef(null);
+  const renderText = (chunkText: string, index: number) => {
+    if (index >= chunkText.length) {
+      return;
+    }
+    setContent((v) => (v += chunkText.slice(index, index + 4)));
+    requestAnimationFrame(() => renderText(chunkText, index + 4));
+  };
+  const startRender = async (text: string) => {
+    requestAnimationFrame(() => renderText(text, 0));
+  };
+
+  const chatScrollBottom = () => {
+    try {
+      chatRef.current.scrollTop = chatRef?.current?.scrollHeight;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const run = async () => {
+    chatScrollBottom();
     if (loading) return;
     try {
       setText("");
-      setAnswer("");
+      setContent("");
+      setChatList((v: any) => [
+        ...v,
+        { role: "User", content: text, status: "finish" },
+      ]);
       setLoading(true);
+      let cur = "";
       const parts = [{ text: text }];
       const result = await model.generateContentStream({
-        contents: [{ role: "user", parts }],
+        contents: [{ role: "User", parts }],
       });
       for await (const chunk of result.stream) {
         const chunkText = chunk.text();
-        console.log(chunkText);
-        setAnswer((v) => (v += chunkText));
+        cur += chunkText;
+        await startRender(chunkText);
       }
+      setChatList((v: any) => [
+        ...v,
+        {
+          role: "Gemini",
+          content: cur,
+          status: "finish",
+        },
+      ]);
     } catch (error) {
-      console.log(error?.messags);
+      setChatList((v: any) => [
+        ...v,
+        {
+          role: "Gemini",
+          content: "Network error.",
+          status: "error",
+        },
+      ]);
+      setContent("Network error.");
     } finally {
       setLoading(false);
     }
@@ -37,19 +89,64 @@ export default function Gemini() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>Gemini-Pro</div>
-      <div className={styles.chat}>
-        <div className={styles.chatItem}>
-          <GoogleCircleFilled style={{ color: theme.color_8, fontSize: 32 }} />
-          <div className={styles.content}>
-            <div className={styles.name}>Gemini</div>
-            {/* {(loading || answer) && ( */}
-            <div className={styles.text}>
-              <Markdown>{answer}</Markdown>
-              {loading && <span className={styles.blinking}></span>}
+      <div className={styles.chat} id="chat-list" ref={chatRef}>
+        {Array.isArray(chatList) &&
+          chatList.map((item, index) => {
+            if (item.status !== "loading") {
+              return (
+                <div
+                  key={item.content + index}
+                  className={cx(styles.chatItem, {
+                    [styles.userItem]: item.role === "User",
+                  })}
+                >
+                  <div className={styles.head}>
+                    {item.role === "User" && (
+                      <SmileFilled
+                        style={{ color: theme.color_8, fontSize: 32 }}
+                      />
+                    )}
+                    {item.role === "Gemini" && (
+                      <GoogleCircleFilled
+                        style={{ color: theme.color_8, fontSize: 32 }}
+                      />
+                    )}
+
+                    <div className={styles.name}>{item?.role}</div>
+                  </div>
+                  <div className={styles.text}>
+                    <Markdown>
+                      {`<span className='${cx(styles.textInner)}'>${
+                        item?.content
+                      }</span>`}
+                    </Markdown>
+                  </div>
+                </div>
+              );
+            } else {
+              return null;
+            }
+          })}
+        {loading && (
+          <div className={styles.chatItem}>
+            <GoogleCircleFilled
+              style={{ color: theme.color_8, fontSize: 32 }}
+            />
+            <div className={styles.content}>
+              <div className={styles.name}>Gemini</div>
+              <div className={styles.text}>
+                <Markdown>
+                  {`<span className='${cx(styles.textInner, {
+                    [styles.loading]: loading,
+                  })}'>${content}</span>`}
+                </Markdown>
+                {!content && loading && (
+                  <span className={styles.blinking}>|</span>
+                )}
+              </div>
             </div>
-            {/* // )} */}
           </div>
-        </div>
+        )}
       </div>
       <div className={styles.bottom}>
         <Space.Compact style={{ width: "100%" }}>
