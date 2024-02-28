@@ -3,13 +3,9 @@ import { useEffect, useState } from "react";
 import styles from "./index.module.less";
 import { Button, Input, Space } from "antd";
 import model from "./model";
-import {
-  GoogleCircleFilled,
-  LoadingOutlined,
-  RobotOutlined,
-  SendOutlined,
-} from "@ant-design/icons";
+import { GoogleCircleFilled, SendOutlined } from "@ant-design/icons";
 import theme from "../../theme";
+import Markdown from "markdown-to-jsx";
 
 export default function Gemini() {
   const [text, setText] = useState("");
@@ -17,6 +13,7 @@ export default function Gemini() {
   const [loading, setLoading] = useState(false);
   const [chatList, setChatList] = useState([]);
   const run = async () => {
+    if (loading) return;
     try {
       setText("");
       setAnswer("");
@@ -36,9 +33,6 @@ export default function Gemini() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    // run();
-  }, []);
 
   return (
     <div className={styles.container}>
@@ -48,12 +42,12 @@ export default function Gemini() {
           <GoogleCircleFilled style={{ color: theme.color_8, fontSize: 32 }} />
           <div className={styles.content}>
             <div className={styles.name}>Gemini</div>
-            {(loading || answer) && (
-              <div className={styles.text}>
-                {answer}
-                {loading && <span className={styles.blinking}></span>}
-              </div>
-            )}
+            {/* {(loading || answer) && ( */}
+            <div className={styles.text}>
+              <Markdown>{answer}</Markdown>
+              {loading && <span className={styles.blinking}></span>}
+            </div>
+            {/* // )} */}
           </div>
         </div>
       </div>
