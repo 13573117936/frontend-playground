@@ -6,6 +6,7 @@ import { RouterProvider } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import Theme from "./theme/index.ts";
 import { showInsetEffect } from "./utils/wave.ts";
+import { Analytics } from "@vercel/analytics/react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         },
       }}
     >
+      <Analytics />
       <RouterProvider router={router} />
     </ConfigProvider>
   </React.StrictMode>
