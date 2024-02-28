@@ -129,21 +129,21 @@ export default function Gemini() {
           })}
         {loading && (
           <div className={styles.chatItem}>
-            <GoogleCircleFilled
-              style={{ color: theme.color_8, fontSize: 32 }}
-            />
-            <div className={styles.content}>
+            <div className={styles.head}>
+              <GoogleCircleFilled
+                style={{ color: theme.color_8, fontSize: 32 }}
+              />
               <div className={styles.name}>Gemini</div>
-              <div className={styles.text}>
-                <Markdown>
-                  {`<span className='${cx(styles.textInner, {
-                    [styles.loading]: loading,
-                  })}'>${content}</span>`}
-                </Markdown>
-                {!content && loading && (
-                  <span className={styles.blinking}>|</span>
-                )}
-              </div>
+            </div>
+            <div className={styles.text}>
+              <Markdown>
+                {`<span className='${cx(styles.textInner, {
+                  [styles.loading]: loading,
+                })}'>${content}</span>`}
+              </Markdown>
+              {!content && loading && (
+                <span className={styles.blinking}>|</span>
+              )}
             </div>
           </div>
         )}
