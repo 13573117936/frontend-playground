@@ -44,14 +44,14 @@ export default function Gemini() {
 
   const run = async () => {
     chatScrollBottom();
-    if (loading) return;
+    if (loading || !text) return;
     try {
-      setText("");
       setContent("");
       setChatList((v: any) => [
         ...v,
         { role: "User", content: text, status: "finish" },
       ]);
+      setText("");
       setLoading(true);
       let cur = "";
       const parts = [{ text: text }];
