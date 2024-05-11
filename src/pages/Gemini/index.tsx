@@ -156,7 +156,16 @@ export default function Gemini() {
               setText(e.target.value);
             }}
             className={styles.input}
-            onPressEnter={run}
+            onPressEnter={(e: any) => {
+              if (e.isComposing || e.keyCode === 229) {
+                e.preventDefault();
+                return;
+              }
+              if (!e.shiftKey) {
+                e.preventDefault();
+                run();
+              }
+            }}
           />
           <Button
             onClick={run}
