@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import styles from "./index.module.less";
 import { Button, Input, Space } from "antd";
 import model from "./model";
@@ -28,22 +28,30 @@ export default function Gemini() {
       return;
     }
     setContent((v) => (v += chunkText.slice(index, index + 4)));
+    chatScrollBottom("instant");
     requestAnimationFrame(() => renderText(chunkText, index + 4));
   };
   const startRender = async (text: string) => {
     requestAnimationFrame(() => renderText(text, 0));
   };
 
-  const chatScrollBottom = () => {
-    try {
-      chatRef.current.scrollTop = chatRef?.current?.scrollHeight;
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const chatScrollBottom = useCallback(
+    (behavior?: "smooth" | "instant" | "auto") => {
+      setTimeout(() => {
+        if (chatRef.current) {
+          const { scrollHeight, clientHeight } = chatRef.current;
+          const maxScrollTop = scrollHeight - clientHeight;
+          chatRef.current.scrollTo({
+            top: maxScrollTop,
+            behavior: behavior || "smooth",
+          });
+        }
+      }, 10);
+    },
+    []
+  );
 
   const run = async () => {
-    chatScrollBottom();
     if (loading || !text) return;
     try {
       setContent("");
@@ -53,6 +61,7 @@ export default function Gemini() {
       ]);
       setText("");
       setLoading(true);
+      chatScrollBottom();
       let cur = "";
       const parts = [{ text: text }];
       const result = await model.generateContentStream({
