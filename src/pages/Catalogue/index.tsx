@@ -1,6 +1,10 @@
 import { List } from "antd";
 import styles from "./index.module.less";
 import { useNavigate } from "react-router-dom";
+
+/**
+ * 首页导航
+ */
 export default function Catelogue() {
   const nav = useNavigate();
   return (
